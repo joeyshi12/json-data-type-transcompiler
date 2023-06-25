@@ -4,7 +4,7 @@ from jdtt.conversion import json_to_language_str, TargetLanguage, file_extension
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--target_language", type=str, choices=["python", "scala"], default="python", help="target language")
+    parser.add_argument("--target_language", type=str, choices=["python", "scala", "typescript"], default="python", help="target language")
     parser.add_argument("--root_schema", type=str, default="Root", help="name of root schema")
     parser.add_argument("--detect_date", action="store_true", help="detect datetime fields and convert to date type")
     parser.add_argument("schema_path", type=str, help="filepath to schema json")
