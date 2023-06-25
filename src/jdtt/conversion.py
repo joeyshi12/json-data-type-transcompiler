@@ -13,19 +13,19 @@ class TargetLanguage(Enum):
     SCALA = 2
 
 def schema_to_python_str(schema: Schema) -> str:
-    formatter = "@dataclass\nclass {class_name}:\n{members}"
+    formatter = "@dataclass\r\nclass {class_name}:\r\n{members}"
     member_str_list = []
     for member, mtype in schema.members.items():
         member_str_list.append(f"    {member}: {mtype}")
-    members_str = "\n".join(member_str_list)
+    members_str = "\r\n".join(member_str_list)
     return formatter.format(class_name=schema.name, members=members_str)
 
 def schema_to_scala_str(schema: Schema) -> str:
-    formatter = "case class {class_name}(\n{members}\n)"
+    formatter = "case class {class_name}(\r\n{members}\r\n)"
     member_str_list = []
     for member, mtype in schema.members.items():
         member_str_list.append(f"    {member}: {mtype}")
-    members_str = ",\n".join(member_str_list)
+    members_str = ",\r\n".join(member_str_list)
     return formatter.format(class_name=schema.name, members=members_str)
 
 converters = {
@@ -51,7 +51,7 @@ language_dtypes = {
 }
 
 import_statements = {
-    TargetLanguage.PYTHON: "import datetime\nfrom dataclasses import dataclass",
+    TargetLanguage.PYTHON: "import datetime\r\nfrom dataclasses import dataclass",
     TargetLanguage.SCALA: "import org.joda.time.DateTime"
 }
 
@@ -109,4 +109,4 @@ def json_to_language_str(schema_json, target_language: TargetLanguage, root_name
 
     schema_str = "\n\n".join(schema_strs)
     target_import_statements = import_statements[target_language]
-    return target_import_statements + "\n\n" + schema_str
+    return target_import_statements + "\r\n\r\n" + schema_str
