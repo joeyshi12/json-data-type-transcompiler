@@ -3,12 +3,15 @@ from enum import Enum
 from typing import Dict
 from dataclasses import dataclass
 
+
 Schema = Dict[str, Dict[str, str]]
+
 
 class TargetLanguage(Enum):
     PYTHON = 1
     SCALA = 2
     TYPESCRIPT = 3
+
 
 @dataclass
 class TargetLanguageTypes:
@@ -18,6 +21,7 @@ class TargetLanguageTypes:
     list_type: str
     date_type: str
 
+
 def schema_to_python_str(name: str, members: Dict[str, str]) -> str:
     formatter = "@dataclass\nclass {class_name}:\n{members}"
     member_str_list = []
@@ -25,6 +29,7 @@ def schema_to_python_str(name: str, members: Dict[str, str]) -> str:
         member_str_list.append(f"    {member}: {mtype}")
     members_str = "\n".join(member_str_list)
     return formatter.format(class_name=name, members=members_str)
+
 
 def schema_to_scala_str(name: str, members: Dict[str, str]) -> str:
     formatter = "case class {class_name}(\n{members}\n)"
@@ -34,6 +39,7 @@ def schema_to_scala_str(name: str, members: Dict[str, str]) -> str:
     members_str = ",\n".join(member_str_list)
     return formatter.format(class_name=name, members=members_str)
 
+
 def schema_to_typescript_str(name: str, members: Dict[str, str]) -> str:
     formatter = "export interface {class_name} {{\n{members}\n}}"
     member_str_list = []
@@ -41,6 +47,7 @@ def schema_to_typescript_str(name: str, members: Dict[str, str]) -> str:
         member_str_list.append(f"    {member}: {mtype};")
     members_str = "\n".join(member_str_list)
     return formatter.format(class_name=name, members=members_str)
+
 
 converters = {
     TargetLanguage.PYTHON: schema_to_python_str,
@@ -56,8 +63,7 @@ language_dtypes = {
 
 import_statements = {
     TargetLanguage.PYTHON: "import datetime\nfrom dataclasses import dataclass",
-    TargetLanguage.SCALA: "import org.joda.time.DateTime",
-    TargetLanguage.TYPESCRIPT: ""
+    TargetLanguage.SCALA: "import org.joda.time.DateTime"
 }
 
 file_extensions = {
@@ -68,9 +74,11 @@ file_extensions = {
 
 date_regex = r"\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?(\.\d{3})?Z"
 
+
 def json_to_schemas(schema_json, target_language: TargetLanguage, root_name="Root", detect_date=True) -> Schema:
     """Converts a json schema to a dictionary of Schema objects."""
     return _json_to_schemas(root_name, schema_json, language_dtypes[target_language], {}, detect_date)
+
 
 def _json_to_schemas(name: str, schema_json, dtypes: TargetLanguageTypes, schema: Schema, detect_date: bool) -> Schema:
     if not isinstance(schema_json, dict) or name in schema:
@@ -80,6 +88,7 @@ def _json_to_schemas(name: str, schema_json, dtypes: TargetLanguageTypes, schema
     for member, mvalue in schema_json.items():
         members[member] = _get_or_create_member_type(member, mvalue, dtypes, schema, detect_date)
     return schema
+
 
 def _get_or_create_member_type(member: str, mvalue, dtypes: TargetLanguageTypes, schema: Schema, detect_date: bool):
     """Returns the type of a member, creating a new schema if necessary."""
@@ -104,6 +113,7 @@ def _get_or_create_member_type(member: str, mvalue, dtypes: TargetLanguageTypes,
     _json_to_schemas(member, mvalue, dtypes, schema, detect_date)
     return member
 
+
 def json_to_language_str(schema_json, target_language: TargetLanguage, root_name="Root", detect_date=True) -> str:
     """Converts a json schema to a string of the target language."""
     infos = json_to_schemas(schema_json, target_language, root_name, detect_date)
@@ -113,5 +123,5 @@ def json_to_language_str(schema_json, target_language: TargetLanguage, root_name
         schema_strs.append(to_language_str(name, schema))
 
     schema_str = "\n\n".join(schema_strs)
-    target_import_statements = import_statements[target_language]
-    return target_import_statements + "\n\n" + schema_str
+    target_import_statements = import_statements.get(target_language)
+    return target_import_statements + "\n\n" + schema_str if target_import_statements else schema_str
