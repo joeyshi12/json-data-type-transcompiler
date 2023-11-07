@@ -2,6 +2,7 @@ import json
 import argparse
 from jdtt.conversion import json_to_language_str, TargetLanguage, file_extensions
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_language", type=str, choices=["python", "scala", "typescript"], default="python", help="target language")
@@ -21,6 +22,7 @@ def main():
         language_str = json_to_language_str(schema_json, target_language, args.root_schema)
         f.write(language_str)
         print(f"{args.target_language} schemas written to {target_path}")
+
 
 if __name__ == "__main__":
     main()
