@@ -15,7 +15,7 @@ def main():
     target_path = schema_path + file_extensions[target_language]
 
     with open(schema_path, "r", encoding="utf-8") as f:
-        schema_json = json.loads(f.read())
+        schema_json = json.load(f)
 
     with open(target_path, "w", encoding="utf-8") as f:
         language_str = json_to_language_str(schema_json, target_language, args.root_schema)

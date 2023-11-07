@@ -56,8 +56,7 @@ language_dtypes = {
 
 import_statements = {
     TargetLanguage.PYTHON: "import datetime\nfrom dataclasses import dataclass",
-    TargetLanguage.SCALA: "import org.joda.time.DateTime",
-    TargetLanguage.TYPESCRIPT: ""
+    TargetLanguage.SCALA: "import org.joda.time.DateTime"
 }
 
 file_extensions = {
@@ -113,5 +112,5 @@ def json_to_language_str(schema_json, target_language: TargetLanguage, root_name
         schema_strs.append(to_language_str(name, schema))
 
     schema_str = "\n\n".join(schema_strs)
-    target_import_statements = import_statements[target_language]
-    return target_import_statements + "\n\n" + schema_str
+    target_import_statements = import_statements.get(target_language)
+    return target_import_statements + "\n\n" + schema_str if target_import_statements else schema_str
